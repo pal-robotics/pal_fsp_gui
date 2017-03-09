@@ -1,0 +1,5 @@
+<library path="lib/libpal_fsp_gui">
+  <class name="pal_fsp_gui/FspPanel" type="pal::FspPanel" base_class_type="rviz::Panel">
+    <description>RQS utility to manage the footstep planning action</description>
+  </class>
+</library>
