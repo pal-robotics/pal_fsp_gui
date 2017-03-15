@@ -5,6 +5,7 @@
 #include <actionlib/client/simple_action_client.h>
 
 #include <pal_footstep_planner_msgs/PlanWalkAction.h>
+#include <pal_footstep_planner_msgs/ExecuteWalkAction.h>
 #include <pal_robot_tools/reference/interactive_marker_reference.h>
 
 #include "ui_pal_fsp_gui.h"
@@ -27,15 +28,21 @@ public:
 
 private:
   typedef actionlib::SimpleActionClient<pal_footstep_planner_msgs::PlanWalkAction> FSPClient;
+  typedef actionlib::SimpleActionClient<pal_footstep_planner_msgs::ExecuteWalkAction> EWClient;
 
   Ui::FSPWidget ui_;
   std::unique_ptr<FSPClient> fsp_client_;
+  std::unique_ptr<EWClient> ew_client_;
   InteractiveMakerReferencePtr marker_;
   ros::Publisher marker_pub_;
+  std::vector<pal_footstep_planner_msgs::FootstepData> path_;
 
   pal_footstep_planner_msgs::PlanWalkGoal createGoal(bool replan);
+  bool createGoal(pal_footstep_planner_msgs::ExecuteWalkGoal* goal);
   void onGoalSucceeded(const actionlib::SimpleClientGoalState& state,
                        const pal_footstep_planner_msgs::PlanWalkResultConstPtr& result);
+  void onGoalExecSucceeded(const actionlib::SimpleClientGoalState& state,
+                           const pal_footstep_planner_msgs::ExecuteWalkResultConstPtr& result);
   void changeState(bool active);
 
 private slots:

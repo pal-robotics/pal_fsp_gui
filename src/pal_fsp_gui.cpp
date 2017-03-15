@@ -22,6 +22,7 @@ void PalFSPGui::init(ros::NodeHandle &nh, QWidget *container)
                                               Eigen::Quaterniond::Identity()));
 
   fsp_client_.reset(new FSPClient(nh, "plan_walk"));
+  ew_client_.reset(new EWClient(nh, "execute_walk"));
 
   marker_pub_ = nh.advertise<visualization_msgs::MarkerArray>("visualization_marker", 1);
 }
@@ -39,6 +40,21 @@ pal_footstep_planner_msgs::PlanWalkGoal PalFSPGui::createGoal(bool replan)
   ROS_INFO_STREAM("ORIENTATION: \n" << goal.target_pose.orientation);
 
   return goal;
+}
+
+bool PalFSPGui::createGoal(pal_footstep_planner_msgs::ExecuteWalkGoal *goal)
+{
+  if (path_.size() != 0)
+  {
+    goal->path = path_;
+  }
+  else
+  {
+    ROS_ERROR("No path calculated");
+    return false;
+  }
+
+  return true;
 }
 
 void PalFSPGui::onGoalSucceeded(const actionlib::SimpleClientGoalState &state,
@@ -81,12 +97,27 @@ void PalFSPGui::onGoalSucceeded(const actionlib::SimpleClientGoalState &state,
 
     // visualize the results
     marker_pub_.publish(markers);
+
+    // Store path
+    path_ = result->footsteps;
   }
   else
   {
     ROS_ERROR_STREAM("Action " << state.toString() << ": " << state.getText());
   }
 
+  changeState(true);
+}
+
+void PalFSPGui::onGoalExecSucceeded(const actionlib::SimpleClientGoalState &state,
+                                    const pal_footstep_planner_msgs::ExecuteWalkResultConstPtr &result)
+{
+  if (state != actionlib::SimpleClientGoalState::SUCCEEDED || !result->success)
+  {
+    ROS_ERROR_STREAM("Execute walk " << state.toString() << ": "
+                                     << (result->success ? "Success" : "No Success"));
+  }
+  path_.clear();
   changeState(true);
 }
 
@@ -113,6 +144,11 @@ void PalFSPGui::onReplan()
 
 void PalFSPGui::onExecute()
 {
-  ROS_INFO("Execute!");
+  pal_footstep_planner_msgs::ExecuteWalkGoal goal;
+  if (createGoal(&goal))
+  {
+    ew_client_->sendGoal(goal, boost::bind(&PalFSPGui::onGoalExecSucceeded, this, _1, _2));
+    changeState(false);
+  }
 }
 }
