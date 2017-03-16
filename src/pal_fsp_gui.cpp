@@ -75,15 +75,27 @@ void PalFSPGui::onGoalSucceeded(const actionlib::SimpleClientGoalState &state,
       marker.action = visualization_msgs::Marker::ADD;
 
       // ORANGE color
-      marker.color.r = 0.7f;
-      marker.color.g = 0.3f;
-      marker.color.b = 0.0f;
-      marker.color.a = 1.0;
+      if(result->footsteps[i].robot_side == pal_footstep_planner_msgs::FootstepData::LEFT)
+      {
+          marker.color.r = 1.0f;
+          marker.color.g = 0.0f;
+          marker.color.b = 0.0f;
+          marker.color.a = 0.8;
+          marker.ns = "left_foot_moving";
+      }
+      else
+      {
+          marker.color.r = 0.0f;
+          marker.color.g = 1.0f;
+          marker.color.b = 0.0f;
+          marker.color.a = 0.8;
+          marker.ns = "right_foot_moving";
+      }
 
       // Set Scale
-      marker.scale.x = 1.0;
-      marker.scale.y = 1.0;
-      marker.scale.z = 1.0;
+      marker.scale.x = 0.2;
+      marker.scale.y = 0.1;
+      marker.scale.z = 0.025;
       marker.lifetime = ros::Duration();
 
       // Retrieve the pose
