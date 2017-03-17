@@ -24,7 +24,7 @@ void PalFSPGui::init(ros::NodeHandle &nh, QWidget *container)
   fsp_client_.reset(new FSPClient(nh, "plan_walk"));
   ew_client_.reset(new EWClient(nh, "execute_walk"));
 
-  marker_pub_ = nh.advertise<visualization_msgs::MarkerArray>("visualization_marker", 1);
+  marker_pub_ = nh.advertise<visualization_msgs::MarkerArray>("visualize_path", 1);
 }
 
 pal_footstep_planner_msgs::PlanWalkGoal PalFSPGui::createGoal(bool replan)
@@ -63,6 +63,11 @@ void PalFSPGui::onGoalSucceeded(const actionlib::SimpleClientGoalState &state,
   if (state == actionlib::SimpleClientGoalState::SUCCEEDED)
   {
     visualization_msgs::MarkerArray markers;
+    // Clear all markers
+    visualization_msgs::Marker marker_clear;
+    marker_clear.action = 3;  // Delete all
+    markers.markers.push_back(marker_clear);
+
     // Loop over the results creating markers
     for (unsigned int i = 0; i < result->footsteps.size(); ++i)
     {
@@ -75,21 +80,21 @@ void PalFSPGui::onGoalSucceeded(const actionlib::SimpleClientGoalState &state,
       marker.action = visualization_msgs::Marker::ADD;
 
       // ORANGE color
-      if(result->footsteps[i].robot_side == pal_footstep_planner_msgs::FootstepData::LEFT)
+      if (result->footsteps[i].robot_side == pal_footstep_planner_msgs::FootstepData::LEFT)
       {
-          marker.color.r = 1.0f;
-          marker.color.g = 0.0f;
-          marker.color.b = 0.0f;
-          marker.color.a = 0.8;
-          marker.ns = "left_foot_moving";
+        marker.color.r = 1.0f;
+        marker.color.g = 0.0f;
+        marker.color.b = 0.0f;
+        marker.color.a = 0.8;
+        marker.ns = "left_foot_moving";
       }
       else
       {
-          marker.color.r = 0.0f;
-          marker.color.g = 1.0f;
-          marker.color.b = 0.0f;
-          marker.color.a = 0.8;
-          marker.ns = "right_foot_moving";
+        marker.color.r = 0.0f;
+        marker.color.g = 1.0f;
+        marker.color.b = 0.0f;
+        marker.color.a = 0.8;
+        marker.ns = "right_foot_moving";
       }
 
       // Set Scale
@@ -112,10 +117,12 @@ void PalFSPGui::onGoalSucceeded(const actionlib::SimpleClientGoalState &state,
 
     // Store path
     path_ = result->footsteps;
+    ui_.display_->setText("Planning Successful");
   }
   else
   {
     ROS_ERROR_STREAM("Action " << state.toString() << ": " << state.getText());
+    ui_.display_->setText(QString::fromStdString("Planning Failed: " + state.getText()));
   }
 
   changeState(true);
@@ -128,6 +135,11 @@ void PalFSPGui::onGoalExecSucceeded(const actionlib::SimpleClientGoalState &stat
   {
     ROS_ERROR_STREAM("Execute walk " << state.toString() << ": "
                                      << (result->success ? "Success" : "No Success"));
+    ui_.display_->setText(QString::fromStdString("Execution Failed: " + state.getText()));
+  }
+  else
+  {
+    ui_.display_->setText("Execution Successful");
   }
   path_.clear();
   changeState(true);
@@ -137,13 +149,13 @@ void PalFSPGui::changeState(bool active)
 {
   ui_.plan_btn_->setEnabled(active);
   ui_.replan_btn_->setEnabled(active);
-  ui_.execute_btn_->setEnabled(active);
 }
 
 void PalFSPGui::onPlan()
 {
   pal_footstep_planner_msgs::PlanWalkGoal goal = createGoal(false);
   fsp_client_->sendGoal(goal, boost::bind(&PalFSPGui::onGoalSucceeded, this, _1, _2));
+  ui_.display_->setText("Planning ...");
   changeState(false);
 }
 
@@ -151,16 +163,29 @@ void PalFSPGui::onReplan()
 {
   pal_footstep_planner_msgs::PlanWalkGoal goal = createGoal(true);
   fsp_client_->sendGoal(goal, boost::bind(&PalFSPGui::onGoalSucceeded, this, _1, _2));
+  ui_.display_->setText("Replanning ...");
   changeState(false);
 }
 
 void PalFSPGui::onExecute()
 {
-  pal_footstep_planner_msgs::ExecuteWalkGoal goal;
-  if (createGoal(&goal))
+  if (ui_.execute_btn_->text().toStdString() == "Execute")
   {
-    ew_client_->sendGoal(goal, boost::bind(&PalFSPGui::onGoalExecSucceeded, this, _1, _2));
-    changeState(false);
+    pal_footstep_planner_msgs::ExecuteWalkGoal goal;
+    if (createGoal(&goal))
+    {
+      ew_client_->sendGoal(goal, boost::bind(&PalFSPGui::onGoalExecSucceeded, this, _1, _2));
+      changeState(false);
+      ui_.display_->setText("Executing ...");
+      ui_.execute_btn_->setText("Cancel");
+    }
+  }
+  else
+  {
+    ew_client_->cancelGoal();
+    ui_.display_->setText("Goal canceled by user");
+    ui_.execute_btn_->setText("Execute");
+    changeState(true);
   }
 }
 }
