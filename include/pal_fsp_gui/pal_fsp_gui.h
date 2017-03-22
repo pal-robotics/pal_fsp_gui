@@ -49,6 +49,7 @@ private slots:
   void onPlan();
   void onReplan();
   void onExecute();
+  void onDimensionChange(bool checked);
 };
 }
 

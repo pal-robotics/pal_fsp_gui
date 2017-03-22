@@ -16,6 +16,7 @@ void PalFSPGui::init(ros::NodeHandle &nh, QWidget *container)
   connect(ui_.plan_btn_, SIGNAL(pressed()), this, SLOT(onPlan()));
   connect(ui_.replan_btn_, SIGNAL(pressed()), this, SLOT(onReplan()));
   connect(ui_.execute_btn_, SIGNAL(pressed()), this, SLOT(onExecute()));
+  connect(ui_.dimension_, SIGNAL(clicked(bool)), this, SLOT(onDimensionChange(bool)));
 
   eVector3 init_marker(0, 0, 0);
   marker_.reset(new InteractiveMakerReference(nh, "Goal", "world", init_marker,
@@ -187,5 +188,17 @@ void PalFSPGui::onExecute()
     ui_.execute_btn_->setText("Execute");
     changeState(true);
   }
+}
+
+void PalFSPGui::onDimensionChange(bool checked)
+{
+    if(checked)
+    {
+        marker_->set2DMode();
+    }
+    else
+    {
+        marker_->set3DMode();
+    }
 }
 }

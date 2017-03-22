@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>406</width>
-    <height>101</height>
+    <width>408</width>
+    <height>103</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,10 +40,26 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="display_">
-     <property name="text">
-      <string/>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
+     <widget class="QLabel" name="display_">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="dimension_">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>2D</string>
+      </property>
+     </widget>
     </widget>
    </item>
   </layout>
