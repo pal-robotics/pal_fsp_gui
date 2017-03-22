@@ -143,13 +143,18 @@ void PalFSPGui::onGoalExecSucceeded(const actionlib::SimpleClientGoalState &stat
     ui_.display_->setText("Execution Successful");
   }
   path_.clear();
+  ui_.execute_btn_->setText("Execute");
   changeState(true);
 }
 
-void PalFSPGui::changeState(bool active)
+void PalFSPGui::changeState(bool active, bool keep_execute)
 {
   ui_.plan_btn_->setEnabled(active);
   ui_.replan_btn_->setEnabled(active);
+  if (!keep_execute)
+  {
+    ui_.execute_btn_->setEnabled(active);
+  }
 }
 
 void PalFSPGui::onPlan()
@@ -176,7 +181,7 @@ void PalFSPGui::onExecute()
     if (createGoal(&goal))
     {
       ew_client_->sendGoal(goal, boost::bind(&PalFSPGui::onGoalExecSucceeded, this, _1, _2));
-      changeState(false);
+      changeState(false, true); //Do not block execute button
       ui_.display_->setText("Executing ...");
       ui_.execute_btn_->setText("Cancel");
     }
@@ -192,13 +197,13 @@ void PalFSPGui::onExecute()
 
 void PalFSPGui::onDimensionChange(bool checked)
 {
-    if(checked)
-    {
-        marker_->set2DMode();
-    }
-    else
-    {
-        marker_->set3DMode();
-    }
+  if (checked)
+  {
+    marker_->set2DMode();
+  }
+  else
+  {
+    marker_->set3DMode();
+  }
 }
 }

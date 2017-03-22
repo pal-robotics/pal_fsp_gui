@@ -43,7 +43,7 @@ private:
                        const pal_footstep_planner_msgs::PlanWalkResultConstPtr& result);
   void onGoalExecSucceeded(const actionlib::SimpleClientGoalState& state,
                            const pal_footstep_planner_msgs::ExecuteWalkResultConstPtr& result);
-  void changeState(bool active);
+  void changeState(bool active, bool keep_execute = false);
 
 private slots:
   void onPlan();
