@@ -16,9 +16,6 @@ public:
 private:
   PalFSPGui gui_;
   ros::NodeHandle nh_;
-
-  virtual void load( const rviz::Config& ) { }
-  virtual void save( rviz::Config ) const { }
 };
 
 }
