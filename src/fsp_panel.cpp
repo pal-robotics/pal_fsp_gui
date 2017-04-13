@@ -4,10 +4,10 @@
 
 namespace pal
 {
-FspPanel::FspPanel(QWidget *parent) : rviz::Panel(parent), gui_(parent), nh_()
+FspPanel::FspPanel(QWidget *parent) : rviz::Panel(parent), gui_(parent), nh_(), private_nh_("~")
 {
   setObjectName("FootstepPanel");
-  gui_.init(nh_, this);
+  gui_.init(nh_, private_nh_, this);
 }
 }
 
