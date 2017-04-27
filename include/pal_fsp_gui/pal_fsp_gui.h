@@ -24,7 +24,7 @@ public:
   {
   }
 
-  void init(ros::NodeHandle& nh, QWidget* container);
+  void init(ros::NodeHandle& nh, ros::NodeHandle &private_nh, QWidget* container);
 
 private:
   typedef actionlib::SimpleActionClient<pal_footstep_planner_msgs::PlanWalkAction> FSPClient;
@@ -36,6 +36,7 @@ private:
   InteractiveMakerReferencePtr marker_;
   ros::Publisher marker_pub_;
   std::vector<pal_footstep_planner_msgs::FootstepData> path_;
+  std::string frame_id_;
 
   pal_footstep_planner_msgs::PlanWalkGoal createGoal(bool replan);
   bool createGoal(pal_footstep_planner_msgs::ExecuteWalkGoal* goal);

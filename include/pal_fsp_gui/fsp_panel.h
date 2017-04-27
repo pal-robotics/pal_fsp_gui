@@ -16,6 +16,7 @@ public:
 private:
   PalFSPGui gui_;
   ros::NodeHandle nh_;
+  ros::NodeHandle private_nh_;
 };
 
 }

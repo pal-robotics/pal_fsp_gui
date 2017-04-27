@@ -5,11 +5,11 @@
 
 namespace pal
 {
-PalFSPGui::PalFSPGui(QWidget *parent) : QWidget(parent)
+PalFSPGui::PalFSPGui(QWidget *parent) : QWidget(parent), frame_id_("world")
 {
 }
 
-void PalFSPGui::init(ros::NodeHandle &nh, QWidget *container)
+void PalFSPGui::init(ros::NodeHandle &nh, ros::NodeHandle &private_nh, QWidget *container)
 {
   ui_.setupUi(container);
 
@@ -18,8 +18,21 @@ void PalFSPGui::init(ros::NodeHandle &nh, QWidget *container)
   connect(ui_.execute_btn_, SIGNAL(pressed()), this, SLOT(onExecute()));
   connect(ui_.dimension_, SIGNAL(clicked(bool)), this, SLOT(onDimensionChange(bool)));
 
+  //Retrieve base frame
+  std::string frame_id_name;
+  if(private_nh.searchParam("marker_frame", frame_id_name))
+  {
+    private_nh.param<std::string>(frame_id_name, frame_id_, "world");
+  }
+  else
+  {
+    ROS_WARN("Could not find param marker_frame");
+    private_nh.param<std::string>("/marker_frame", frame_id_, "world");
+  }
+  ROS_INFO_STREAM("Marker will appear on frame: " << frame_id_);
+
   eVector3 init_marker(0, 0, 0);
-  marker_.reset(new InteractiveMakerReference(nh, "Goal", "world", init_marker,
+  marker_.reset(new InteractiveMakerReference(nh, "Goal", frame_id_, init_marker,
                                               Eigen::Quaterniond::Identity()));
 
   fsp_client_.reset(new FSPClient(nh, "plan_walk"));
@@ -73,7 +86,7 @@ void PalFSPGui::onGoalSucceeded(const actionlib::SimpleClientGoalState &state,
     for (unsigned int i = 0; i < result->footsteps.size(); ++i)
     {
       visualization_msgs::Marker marker;
-      marker.header.frame_id = "world";
+      marker.header.frame_id = frame_id_;
       marker.header.stamp = ros::Time::now();
       marker.ns = "walk_path";
       marker.id = i;
@@ -100,7 +113,7 @@ void PalFSPGui::onGoalSucceeded(const actionlib::SimpleClientGoalState &state,
 
       // Set Scale
       marker.scale.x = 0.2;
-      marker.scale.y = 0.1;
+      marker.scale.y = 0.15;
       marker.scale.z = 0.025;
       marker.lifetime = ros::Duration();
 
