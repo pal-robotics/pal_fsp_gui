@@ -39,6 +39,7 @@ void PalFSPGui::init(ros::NodeHandle &nh, ros::NodeHandle &private_nh, QWidget *
   ew_client_.reset(new EWClient(nh, "execute_walk"));
 
   marker_pub_ = nh.advertise<visualization_msgs::MarkerArray>("visualize_path", 1);
+  hint_sub_ = nh.subscribe("footstep_marker_hint", 1, &PalFSPGui::hintCb, this);
 }
 
 pal_footstep_planner_msgs::PlanWalkGoal PalFSPGui::createGoal(bool replan)
@@ -168,6 +169,16 @@ void PalFSPGui::changeState(bool active, bool keep_execute)
   {
     ui_.execute_btn_->setEnabled(active);
   }
+}
+
+void PalFSPGui::hintCb(const geometry_msgs::PoseConstPtr &pose)
+{
+  ROS_INFO_STREAM("Got pose hint");
+  eVector3 position;
+  eQuaternion rotation;
+  convert(pose->position, position);
+  convert(pose->orientation, rotation);
+  marker_->setPoseTarget(position, rotation);
 }
 
 void PalFSPGui::onPlan()

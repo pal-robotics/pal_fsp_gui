@@ -35,6 +35,7 @@ private:
   std::unique_ptr<EWClient> ew_client_;
   InteractiveMakerReferencePtr marker_;
   ros::Publisher marker_pub_;
+  ros::Subscriber hint_sub_;
   std::vector<pal_footstep_planner_msgs::FootstepData> path_;
   std::string frame_id_;
 
@@ -45,6 +46,7 @@ private:
   void onGoalExecSucceeded(const actionlib::SimpleClientGoalState& state,
                            const pal_footstep_planner_msgs::ExecuteWalkResultConstPtr& result);
   void changeState(bool active, bool keep_execute = false);
+  void hintCb(const geometry_msgs::PoseConstPtr &pose);
 
 private slots:
   void onPlan();
