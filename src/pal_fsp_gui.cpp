@@ -3,6 +3,8 @@
 #include <pal_robot_tools/conversions.h>
 #include <visualization_msgs/MarkerArray.h>
 
+using namespace pal_robot_tools;
+
 namespace pal
 {
 PalFSPGui::PalFSPGui(QWidget *parent) : QWidget(parent), frame_id_("world")
@@ -178,7 +180,7 @@ void PalFSPGui::hintCb(const geometry_msgs::PoseConstPtr &pose)
   eQuaternion rotation;
   convert(pose->position, position);
   convert(pose->orientation, rotation);
-  marker_->setPoseTarget(position, rotation);
+  marker_->setPoseTarget(createMatrix(rotation, position));
 }
 
 void PalFSPGui::onPlan()

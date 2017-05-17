@@ -33,7 +33,7 @@ private:
   Ui::FSPWidget ui_;
   std::unique_ptr<FSPClient> fsp_client_;
   std::unique_ptr<EWClient> ew_client_;
-  InteractiveMakerReferencePtr marker_;
+  pal_robot_tools::InteractiveMakerReferencePtr marker_;
   ros::Publisher marker_pub_;
   ros::Subscriber hint_sub_;
   std::vector<pal_footstep_planner_msgs::FootstepData> path_;
