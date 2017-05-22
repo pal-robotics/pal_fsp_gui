@@ -24,7 +24,7 @@ public:
   {
   }
 
-  void init(ros::NodeHandle& nh, ros::NodeHandle &private_nh, QWidget* container);
+  void init(ros::NodeHandle& nh, ros::NodeHandle& private_nh, QWidget* container);
 
 private:
   typedef actionlib::SimpleActionClient<pal_footstep_planner_msgs::PlanWalkAction> FSPClient;
@@ -39,14 +39,14 @@ private:
   std::vector<pal_footstep_planner_msgs::FootstepData> path_;
   std::string frame_id_;
 
-  pal_footstep_planner_msgs::PlanWalkGoal createGoal(bool replan);
+  pal_footstep_planner_msgs::PlanWalkGoal createGoal(bool check_collisions, bool replan);
   bool createGoal(pal_footstep_planner_msgs::ExecuteWalkGoal* goal);
   void onGoalSucceeded(const actionlib::SimpleClientGoalState& state,
                        const pal_footstep_planner_msgs::PlanWalkResultConstPtr& result);
   void onGoalExecSucceeded(const actionlib::SimpleClientGoalState& state,
                            const pal_footstep_planner_msgs::ExecuteWalkResultConstPtr& result);
   void changeState(bool active, bool keep_execute = false);
-  void hintCb(const geometry_msgs::PoseConstPtr &pose);
+  void hintCb(const geometry_msgs::PoseConstPtr& pose);
 
 private slots:
   void onPlan();
