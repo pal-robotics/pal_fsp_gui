@@ -20,9 +20,9 @@ void PalFSPGui::init(ros::NodeHandle &nh, ros::NodeHandle &private_nh, QWidget *
   connect(ui_.execute_btn_, SIGNAL(pressed()), this, SLOT(onExecute()));
   connect(ui_.dimension_, SIGNAL(clicked(bool)), this, SLOT(onDimensionChange(bool)));
 
-  //Retrieve base frame
+  // Retrieve base frame
   std::string frame_id_name;
-  if(private_nh.searchParam("marker_frame", frame_id_name))
+  if (private_nh.searchParam("marker_frame", frame_id_name))
   {
     private_nh.param<std::string>(frame_id_name, frame_id_, "world");
   }
@@ -44,10 +44,11 @@ void PalFSPGui::init(ros::NodeHandle &nh, ros::NodeHandle &private_nh, QWidget *
   hint_sub_ = nh.subscribe("footstep_marker_hint", 1, &PalFSPGui::hintCb, this);
 }
 
-pal_footstep_planner_msgs::PlanWalkGoal PalFSPGui::createGoal(bool replan)
+pal_footstep_planner_msgs::PlanWalkGoal PalFSPGui::createGoal(bool check_collisions, bool replan)
 {
   pal_footstep_planner_msgs::PlanWalkGoal goal;
   goal.replan = replan;
+  goal.check_collision = check_collisions;
   ROS_INFO_STREAM((replan ? "REPLAN" : "PLAN") << " ACTION:");
 
   // Load interactive marker values
@@ -185,7 +186,7 @@ void PalFSPGui::hintCb(const geometry_msgs::PoseConstPtr &pose)
 
 void PalFSPGui::onPlan()
 {
-  pal_footstep_planner_msgs::PlanWalkGoal goal = createGoal(false);
+  pal_footstep_planner_msgs::PlanWalkGoal goal = createGoal(ui_.collision_->isChecked(), false);
   fsp_client_->sendGoal(goal, boost::bind(&PalFSPGui::onGoalSucceeded, this, _1, _2));
   ui_.display_->setText("Planning ...");
   changeState(false);
@@ -193,7 +194,7 @@ void PalFSPGui::onPlan()
 
 void PalFSPGui::onReplan()
 {
-  pal_footstep_planner_msgs::PlanWalkGoal goal = createGoal(true);
+  pal_footstep_planner_msgs::PlanWalkGoal goal = createGoal(ui_.collision_->isChecked(), true);
   fsp_client_->sendGoal(goal, boost::bind(&PalFSPGui::onGoalSucceeded, this, _1, _2));
   ui_.display_->setText("Replanning ...");
   changeState(false);
@@ -207,7 +208,7 @@ void PalFSPGui::onExecute()
     if (createGoal(&goal))
     {
       ew_client_->sendGoal(goal, boost::bind(&PalFSPGui::onGoalExecSucceeded, this, _1, _2));
-      changeState(false, true); //Do not block execute button
+      changeState(false, true);  // Do not block execute button
       ui_.display_->setText("Executing ...");
       ui_.execute_btn_->setText("Cancel");
     }
