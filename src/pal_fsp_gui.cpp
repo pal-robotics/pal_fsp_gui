@@ -65,6 +65,7 @@ bool PalFSPGui::createGoal(pal_footstep_planner_msgs::ExecuteWalkGoal *goal)
   if (path_.size() != 0)
   {
     goal->path = path_;
+    goal->replan = true;
   }
   else
   {
