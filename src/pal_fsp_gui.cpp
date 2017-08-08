@@ -3,8 +3,6 @@
 #include <pal_robot_tools/conversions.h>
 #include <visualization_msgs/MarkerArray.h>
 
-using namespace pal_robot_tools;
-
 namespace pal
 {
 PalFSPGui::PalFSPGui(QWidget *parent) : QWidget(parent), frame_id_("world")
@@ -34,8 +32,8 @@ void PalFSPGui::init(ros::NodeHandle &nh, ros::NodeHandle &private_nh, QWidget *
   ROS_INFO_STREAM("Marker will appear on frame: " << frame_id_);
 
   eVector3 init_marker(0, 0, 0);
-  marker_.reset(new InteractiveMakerReference(nh, "Goal", frame_id_, init_marker,
-                                              Eigen::Quaterniond::Identity()));
+  marker_.reset(new pal_robot_tools::InteractiveMakerReference(
+      nh, "Goal", frame_id_, init_marker, Eigen::Quaterniond::Identity()));
 
   fsp_client_.reset(new FSPClient(nh, "plan_walk"));
   ew_client_.reset(new EWClient(nh, "execute_walk"));
@@ -160,7 +158,6 @@ void PalFSPGui::onGoalExecSucceeded(const actionlib::SimpleClientGoalState &stat
   {
     ui_.display_->setText("Execution Successful");
   }
-  path_.clear();
   ui_.execute_btn_->setText("Execute");
   changeState(true);
 }
@@ -213,6 +210,9 @@ void PalFSPGui::onExecute()
       changeState(false, true);  // Do not block execute button
       ui_.display_->setText("Executing ...");
       ui_.execute_btn_->setText("Cancel");
+
+      //Remove current path
+      path_.clear();
     }
   }
   else
