@@ -206,6 +206,7 @@ void PalFSPGui::onExecute()
   if (ui_.execute_btn_->text().toStdString() == "Execute")
   {
     pal_footstep_planner_msgs::ExecuteWalkGoal goal;
+    goal.replan = ui_.cont_replan_->isChecked();
     if (createGoal(&goal))
     {
       ew_client_->sendGoal(goal, boost::bind(&PalFSPGui::onGoalExecSucceeded, this, _1, _2));
