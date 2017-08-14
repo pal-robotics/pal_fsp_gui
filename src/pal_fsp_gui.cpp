@@ -5,7 +5,7 @@
 
 namespace pal
 {
-PalFSPGui::PalFSPGui(QWidget *parent) : QWidget(parent), frame_id_("world")
+PalFSPGui::PalFSPGui(QWidget *parent) : QWidget(parent), frame_id_("map")
 {
 }
 
@@ -22,12 +22,12 @@ void PalFSPGui::init(ros::NodeHandle &nh, ros::NodeHandle &private_nh, QWidget *
   std::string frame_id_name;
   if (private_nh.searchParam("marker_frame", frame_id_name))
   {
-    private_nh.param<std::string>(frame_id_name, frame_id_, "world");
+    private_nh.param<std::string>(frame_id_name, frame_id_, "map");
   }
   else
   {
     ROS_WARN("Could not find param marker_frame");
-    private_nh.param<std::string>("/marker_frame", frame_id_, "world");
+    private_nh.param<std::string>("/marker_frame", frame_id_, "map");
   }
   ROS_INFO_STREAM("Marker will appear on frame: " << frame_id_);
 
