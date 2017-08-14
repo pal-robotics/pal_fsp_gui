@@ -58,12 +58,12 @@ pal_footstep_planner_msgs::PlanWalkGoal PalFSPGui::createGoal(bool check_collisi
   return goal;
 }
 
-bool PalFSPGui::createGoal(pal_footstep_planner_msgs::ExecuteWalkGoal *goal)
+bool PalFSPGui::createGoal(pal_footstep_planner_msgs::ExecuteWalkGoal *goal, bool replan)
 {
   if (path_.size() != 0)
   {
     goal->path = path_;
-    goal->replan = true;
+    goal->replan = replan;
   }
   else
   {
@@ -203,8 +203,7 @@ void PalFSPGui::onExecute()
   if (ui_.execute_btn_->text().toStdString() == "Execute")
   {
     pal_footstep_planner_msgs::ExecuteWalkGoal goal;
-    goal.replan = ui_.cont_replan_->isChecked();
-    if (createGoal(&goal))
+    if (createGoal(&goal, ui_.cont_replan_->isChecked()))
     {
       ew_client_->sendGoal(goal, boost::bind(&PalFSPGui::onGoalExecSucceeded, this, _1, _2));
       changeState(false, true);  // Do not block execute button
