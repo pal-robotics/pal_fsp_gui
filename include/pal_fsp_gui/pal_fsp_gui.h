@@ -40,7 +40,7 @@ private:
   std::string frame_id_;
 
   pal_footstep_planner_msgs::PlanWalkGoal createGoal(bool check_collisions, bool replan);
-  bool createGoal(pal_footstep_planner_msgs::ExecuteWalkGoal* goal);
+  bool createGoal(pal_footstep_planner_msgs::ExecuteWalkGoal* goal, bool replan);
   void onGoalSucceeded(const actionlib::SimpleClientGoalState& state,
                        const pal_footstep_planner_msgs::PlanWalkResultConstPtr& result);
   void onGoalExecSucceeded(const actionlib::SimpleClientGoalState& state,
