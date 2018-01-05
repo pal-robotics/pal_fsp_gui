@@ -6,7 +6,7 @@
 
 #include <pal_footstep_planner_msgs/PlanWalkAction.h>
 #include <pal_footstep_planner_msgs/ExecuteWalkAction.h>
-#include <pal_robot_tools/reference/interactive_marker_reference.h>
+#include <pal_robot_tools/reference/pose/pose_interactive_marker_reference.h>
 
 #include "ui_pal_fsp_gui.h"
 #include <QWidget>
