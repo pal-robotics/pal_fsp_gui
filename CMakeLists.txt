@@ -7,7 +7,7 @@ find_package(catkin REQUIRED
   rviz
   pal_footstep_planner_msgs
   interactive_markers
-  pal_robot_tools
+  pal_ros_utils
 )
 
 find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)

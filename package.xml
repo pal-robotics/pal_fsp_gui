@@ -14,8 +14,9 @@
   <depend>rviz</depend>
   <depend>pal_footstep_planner_msgs</depend>
   <depend>interactive_markers</depend>
+  <depend>pal_ros_utils</depend>
   <build_depend>class_loader</build_depend>
-  <build_depend>pal_robot_tools</build_depend>
+
 
   <export>
     <rviz plugin="${prefix}/plugin.xml"/>
