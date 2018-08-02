@@ -8,10 +8,19 @@ find_package(catkin REQUIRED
   pal_footstep_planner_msgs
   interactive_markers
   pal_ros_utils
+  rqt_gui_cpp
 )
 
-find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
-include(${QT_USE_FILE})
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+
+if("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
+  find_package(Qt5Widgets REQUIRED)
+else()
+  find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
+  include(${QT_USE_FILE})
+endif()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -fPIC")
 
 ###################################
@@ -21,14 +30,23 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES pal_motion_builder
 #  CATKIN_DEPENDS play_motion_msgs
-#  DEPENDS system_lib
+#  DEPENDS QT
 )
 
-qt4_wrap_cpp(pal_fsp_gui_MOCS
+if("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
+  qt5_wrap_cpp(pal_fsp_gui_MOCS
   include/${PROJECT_NAME}/pal_fsp_gui.h
   include/${PROJECT_NAME}/fsp_panel.h)
-qt4_wrap_ui(pal_fsp_gui_UIS_H
-  resources/pal_fsp_gui.ui)
+  qt5_wrap_ui(pal_fsp_gui_UIS_H
+    resources/pal_fsp_gui.ui)
+else()
+  qt4_wrap_cpp(pal_fsp_gui_MOCS
+  include/${PROJECT_NAME}/pal_fsp_gui.h
+  include/${PROJECT_NAME}/fsp_panel.h)
+  qt4_wrap_ui(pal_fsp_gui_UIS_H
+    resources/pal_fsp_gui.ui)
+endif()
+
 
 ###########
 ## Build ##
@@ -43,9 +61,13 @@ add_library(${PROJECT_NAME}
   ${pal_fsp_gui_UIS_H})
 
 target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  ${QT_QTCORE_LIBRARY}
-  ${QT_QTGUI_LIBRARY})
+  ${catkin_LIBRARIES})
+
+if("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
+  target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
+else()
+  target_link_libraries(${PROJECT_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
+endif()
 
 find_package(class_loader REQUIRED)
 class_loader_hide_library_symbols(${PROJECT_NAME})

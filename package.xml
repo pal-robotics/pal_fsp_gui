@@ -12,6 +12,7 @@
 
   <depend>roscpp</depend>
   <depend>rviz</depend>
+  <depend>rqt_gui_cpp</depend>
   <depend>pal_footstep_planner_msgs</depend>
   <depend>interactive_markers</depend>
   <depend>pal_ros_utils</depend>
