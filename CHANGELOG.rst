@@ -2,8 +2,8 @@
 Changelog for package pal_fsp_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2022-10-19)
+------------------
 * Add missing libqt_dev
 * Contributors: Victor Lopez
 
