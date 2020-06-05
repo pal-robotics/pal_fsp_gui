@@ -2,6 +2,11 @@
 Changelog for package pal_fsp_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add missing libqt_dev
+* Contributors: Victor Lopez
+
 1.0.0 (2018-08-02)
 ------------------
 * Merge branch 'qt5' into 'master'
